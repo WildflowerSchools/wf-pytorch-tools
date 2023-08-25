@@ -1,18 +1,18 @@
 [project]
-name = "wf-project-name"
+name = "wf-pytorch-tools"
 dynamic = ["version"]
 
 [tool.poetry]
-name = "wf-project-name"
+name = "wf-pytorch-tools"
 version = "0.1.0"
-description = ""
-authors = ["NAME <EMAIL>"]
-maintainers = ["NAME <EMAIL>"]
+description = "A collection of tools for working with deep learning models in PyTorch"
+authors = ["Theodore Quinn <ted.quinn@wildflowerschools.org>"]
+maintainers = ["Theodore Quinn <ted.quinn@wildflowerschools.org>"]
 readme = "README.md"
 keywords = []
-repository = "<<GITHUB URL>>"
+repository = "https://github.com/WildflowerSchools/wf-pytorch-tools"
 license = "MIT"
-packages = [{include = "MODULE_NAME"}]
+packages = [{include = "pytorch_tools"}]
 classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
@@ -23,6 +23,9 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.8"
 toml = "^0.10.2"
+torch = "^2.0.0"
+pandas = "^2.0.0"
+numpy = "^1.24.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"

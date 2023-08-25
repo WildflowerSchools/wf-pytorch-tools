@@ -1,10 +1,10 @@
-# MODULE_NAME
+# pytorch_tools
 
-SHORT_DESCRIPTION
+A collection of tools for working with deep learning models in PyTorch
 
 ## Installation
 
-`pip install PYPI_PACKAGE_NAME`
+`pip install wf-pytorch-tools`
 
 ## Development
 
