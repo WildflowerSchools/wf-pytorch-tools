@@ -13,7 +13,10 @@ def train(
     evaluation_dataloader,
     accuracy_function,
     num_epochs=5,
+    device=None,
 ):
+    if device is None:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     training_diagnostics_list = list()
     evaluation_diagnostics_list = list()
     for epoch_index in range(num_epochs):
@@ -24,6 +27,7 @@ def train(
             optimizer=optimizer,
             dataloader=training_dataloader,
             accuracy_function=accuracy_function,
+            device=device,
         )
         training_diagnostics_epoch = (
             training_diagnostics_epoch
@@ -41,6 +45,7 @@ def train(
             loss_function=loss_function,
             dataloader=evaluation_dataloader,
             accuracy_function=accuracy_function,
+            device=device,
         )
         evaluation_diagnostics_list.append({
             'epoch_index': epoch_index,
@@ -62,13 +67,19 @@ def train_epoch(
     optimizer,
     dataloader,
     accuracy_function,
+    device=None,
 ):
+    if device is None:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
     num_batches = len(dataloader)
     num_examples_by_batch = np.full(num_batches, np.nan)
     loss_by_batch = np.full(num_batches, np.nan)
     accuracy_by_batch = np.full(num_batches, np.nan)
     model.train()
     for batch_index, (x_batch, y_batch) in enumerate(dataloader):
+        x_batch = x_batch.to(device)
+        y_batch = y_batch.to(device)
         model_output_batch = model(x_batch)
         loss_batch = loss_function(model_output_batch, y_batch)
         optimizer.zero_grad()
@@ -96,7 +107,11 @@ def evaluate(
     loss_function,
     dataloader,
     accuracy_function,
+    device=None,
 ):
+    if device is None:
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
     num_batches = len(dataloader)
     num_examples_by_batch = np.full(num_batches, np.nan)
     loss_by_batch = np.full(num_batches, np.nan)
@@ -104,6 +119,8 @@ def evaluate(
     model.eval()
     with torch.no_grad():
         for batch_index, (x_batch, y_batch) in enumerate(dataloader):
+            x_batch = x_batch.to(device)
+            y_batch = y_batch.to(device)
             num_examples = len(x_batch)
             model_output_batch = model(x_batch)
             loss_batch = loss_function(model_output_batch, y_batch)
