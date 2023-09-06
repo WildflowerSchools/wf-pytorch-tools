@@ -25,7 +25,7 @@ def train(
     training_diagnostics_list = list()
     evaluation_diagnostics_list = list()
     for epoch_index in range(num_epochs):
-        logger.info(f'Starting training for epoch {epoch_index + 1}')
+        logger.info(f'Starting training for epoch {epoch_index + 1} ({len(training_dataloader)} batches)')
         epoch_start_time = time.time()
         training_diagnostics_epoch = train_epoch(
             model=model,
@@ -51,7 +51,7 @@ def train(
             ])
         )
         training_diagnostics_list.append(training_diagnostics_epoch)
-        logger.info(f'Starting evaluation for epoch {epoch_index + 1}')
+        logger.info(f'Starting evaluation for epoch {epoch_index + 1} ({len(evaluation_dataloader)} batches)')
         evaluation_start_time = time.time()
         evaluation_loss, evaluation_accuracy, num_evaluation_examples = evaluate(
             model=model,
