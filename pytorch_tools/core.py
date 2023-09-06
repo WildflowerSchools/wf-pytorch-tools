@@ -1,6 +1,8 @@
 import torch
 import pandas as pd
 import numpy as np
+import tqdm
+import tqdm.notebook
 import time
 import logging
 
@@ -15,6 +17,8 @@ def train(
     accuracy_function,
     num_epochs=5,
     device=None,
+    progress_bar=False,
+    notebook=False,
 ):
     if device is None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -30,6 +34,8 @@ def train(
             dataloader=training_dataloader,
             accuracy_function=accuracy_function,
             device=device,
+            progress_bar=progress_bar,
+            notebook=notebook,
         )
         epoch_end_time = time.time()
         epoch_time_elapsed = epoch_end_time - epoch_start_time
@@ -53,6 +59,8 @@ def train(
             dataloader=evaluation_dataloader,
             accuracy_function=accuracy_function,
             device=device,
+            progress_bar=progress_bar,
+            notebook=notebook,
         )
         evaluation_end_time = time.time()
         evaluation_time_elapsed = evaluation_end_time - evaluation_start_time
@@ -79,6 +87,8 @@ def train_epoch(
     dataloader,
     accuracy_function,
     device=None,
+    progress_bar=False,
+    notebook=False,
 ):
     epoch_start = time.time()
     if device is None:
@@ -89,7 +99,14 @@ def train_epoch(
     loss_by_batch = np.full(num_batches, np.nan)
     accuracy_by_batch = np.full(num_batches, np.nan)
     model.train()
-    for batch_index, (x_batch, y_batch) in enumerate(dataloader):
+    if progress_bar:
+        if notebook:
+            dataloader_iterator = tqdm.notebook.tqdm(enumerate(dataloader), total=len(dataloader))
+        else:
+            dataloader_iterator = tqdm.tqdm(enumerate(dataloader), total=len(dataloader))
+    else:
+        dataloader_iterator = enumerate(dataloader)
+    for batch_index, (x_batch, y_batch) in dataloader_iterator:
         x_batch = x_batch.to(device)
         y_batch = y_batch.to(device)
         model_output_batch = model(x_batch)
@@ -123,6 +140,8 @@ def evaluate(
     dataloader,
     accuracy_function,
     device=None,
+    progress_bar=False,
+    notebook=False,
 ):
     if device is None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -133,7 +152,14 @@ def evaluate(
     accuracy_by_batch = np.full(num_batches, np.nan)
     model.eval()
     with torch.no_grad():
-        for batch_index, (x_batch, y_batch) in enumerate(dataloader):
+        if progress_bar:
+            if notebook:
+                dataloader_iterator = tqdm.notebook.tqdm(enumerate(dataloader), total=len(dataloader))
+            else:
+                dataloader_iterator = tqdm.tqdm(enumerate(dataloader), total=len(dataloader))
+        else:
+            dataloader_iterator = enumerate(dataloader)
+        for batch_index, (x_batch, y_batch) in dataloader_iterator:
             x_batch = x_batch.to(device)
             y_batch = y_batch.to(device)
             num_examples = len(x_batch)
